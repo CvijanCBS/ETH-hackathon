@@ -5,17 +5,13 @@ import ReactDOM from "react-dom/client"
 import { WagmiProvider } from "wagmi"
 import { ToastContainer } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
-import {
-  createBrowserRouter,
-  RouterProvider,
-} from "react-router-dom";
+import { createBrowserRouter, RouterProvider } from "react-router-dom"
 import App from "./App.tsx"
 import { config } from "./wagmi.ts"
 
 import "./index.css"
 
 globalThis.Buffer = Buffer
-
 
 const queryClient = new QueryClient()
 
@@ -24,7 +20,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
         <ToastContainer />
-        <App/>
+        <App />
       </QueryClientProvider>
     </WagmiProvider>
   </React.StrictMode>,

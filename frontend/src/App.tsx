@@ -1,30 +1,28 @@
-import { Route, RouterProvider, createBrowserRouter, createRoutesFromElements } from "react-router-dom";
-import Layout from "./components/Layout";
-import Home from "./views/home";
-import DashBoard from "./views/dashboard";
+import { Route, RouterProvider, createBrowserRouter, createRoutesFromElements } from "react-router-dom"
+import Layout from "./components/Layout"
+import Home from "./views/home"
+import DashBoard from "./views/dashboard"
 
 const router = createBrowserRouter(
   createRoutesFromElements(
-  <Route path="/" element={<Layout />}>
-    <Route index element={<Home />} />
-    <Route path="dashboard" element={<DashBoard />} />
-  </Route>
-  
-));
+    <Route path="/" element={<Layout />}>
+      <Route index element={<Home />} />
+      <Route path="dashboard" element={<DashBoard />} />
+    </Route>,
+  ),
+)
 
 if (import.meta.hot) {
-  import.meta.hot.dispose(() => router.dispose());
+  import.meta.hot.dispose(() => router.dispose())
 }
 
 function App() {
-  return (
-     <RouterProvider router={router} />
-  )
+  return <RouterProvider router={router} />
 }
 export default App
 
-
-{/* <div>
+{
+  /* <div>
   <h2 className="text-3xl">Account</h2>
 
   <div>
@@ -51,4 +49,5 @@ export default App
   ))}
   <div>{status}</div>
   <div>{error?.message}</div>
-</div> */}
+</div> */
+}
