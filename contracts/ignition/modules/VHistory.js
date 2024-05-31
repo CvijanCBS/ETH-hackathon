@@ -15,6 +15,5 @@ module.exports = buildModule("VHistoryModule", (m) => {
   const carShops = m.contract("CarShops", [manufacturer]);
 
   return { dataVerifier, manufacturer, carOwner, carShops };
-  // return {dataVerifier, manufacturer}
 
 });
