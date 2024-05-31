@@ -66,7 +66,10 @@ export default function CarOwnerTab() {
         />
       </div>
       <div>
-        <label className=" mb-2 text-sm font-medium text-gray-900 flex flex-col">{`Enter new owner `}<span className="text-gray-500 text-xs">{`(Enter this only if you are changing ownership)`}</span></label>
+        <label className=" mb-2 text-sm font-medium text-gray-900 flex flex-col">
+          {`Enter new owner `}
+          <span className="text-gray-500 text-xs">{`(Enter this only if you are changing ownership)`}</span>
+        </label>
         <input
           onChange={(e) => handleChange(e)}
           name={"new_owner"}

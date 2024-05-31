@@ -1,9 +1,11 @@
 import { http, createConfig } from "wagmi"
-import { mainnet, optimismSepolia, sepolia } from "wagmi/chains"
+import { mainnet, optimismSepolia, sepolia, localhost } from "wagmi/chains"
 import { coinbaseWallet, injected, walletConnect } from "wagmi/connectors"
 
+const isDevelopment = import.meta.env.VITE_ENV === "DEVELOPMENT"
+
 export const config = createConfig({
-  chains: [mainnet, sepolia, optimismSepolia],
+  chains: [mainnet, sepolia, optimismSepolia, localhost],
   connectors: [
     injected(),
     coinbaseWallet({ appName: "Create Wagmi" }),
@@ -13,6 +15,7 @@ export const config = createConfig({
     [optimismSepolia.id]: http(),
     [mainnet.id]: http(),
     [sepolia.id]: http(),
+    [localhost.id]: http(),
   },
 })
 
