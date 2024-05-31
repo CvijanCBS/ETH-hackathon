@@ -44,7 +44,7 @@ contract Manufacturer is Ownable {
      * @dev Reverts if the VIN is not 17 characters long or if the production date is invalid.
      */
     function produceVehicle(string memory vin, uint256 productionDate, address owner, uint256 initialMileage) public {
-        if(bytes(vin).length != 17) {
+        if(bytes(vin).length != 17 || vehicles[vin].owner != address(0x0)) {
             revert InvalidVIN();
         }
 
