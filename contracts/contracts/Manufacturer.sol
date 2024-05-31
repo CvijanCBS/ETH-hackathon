@@ -18,6 +18,7 @@ contract Manufacturer is Ownable {
     event DataVerified(string indexed vin, bool isValid);
     event NewOwner(address indexed  newOwner);
     event NewWalletCreated(address indexed wallet, address owner);
+    event CarInfoChanged(string vin);
 
     address public verifierContract;
 
@@ -102,6 +103,13 @@ contract Manufacturer is Ownable {
         emit NewOwner(newOwner);
     }
 
+    /**
+     * @notice Changes the information of a car.
+     * @param vin The Vehicle Identification Number (VIN) of the car.
+     * @param productionDate The production date of the car.
+     * @param initialMileage The initial mileage of the car.
+     * @dev Reverts if the VIN is not 17 characters long or if the production date is in the future.
+     */
     function changeCarInfo(string memory vin, uint256 productionDate, uint256 initialMileage) public {
         if(bytes(vin).length != 17) {
             revert InvalidVIN();
@@ -112,6 +120,8 @@ contract Manufacturer is Ownable {
         }
 
         vehicles[vin] = Vehicle(productionDate, initialMileage, msg.sender, msg.sender);
+
+        emit CarInfoChanged(vin);
     }
 
     /**
