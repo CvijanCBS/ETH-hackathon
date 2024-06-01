@@ -75,7 +75,8 @@ export default function Home() {
       {inspectingCarInfo && vehicleData?.data?.productionDate !== 0n ? (
         <div className="w-full bg-white rounded-lg shadow-md py-5 px-4 ">
           <div className="flex flex-col gap-5">
-            <h1 className="text-gray-900 font-bold text-2xl mb-9">Car's info</h1>
+            <h1 className="text-gray-900 font-bold text-2xl mb-4">Car's info</h1>
+            <p className="text-gray-600 font-medium"> <span className="text-gray-900 font-bold">VIN:</span> {` ${vin}`}</p>
             <img src="/carInspect.jpeg" className="w-full max-w-[500px] aspect-auto rounded-lg" alt="car" />
             <div className="w-full max-w-[500px] flex flex-row justify-between items-center">
               <p className="text-base font-medium text-gray-900">Production date:</p>{" "}
