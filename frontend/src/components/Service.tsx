@@ -1,6 +1,8 @@
 import { useState } from "react"
 import { toast } from "react-toastify"
-import { useAccount } from "wagmi"
+import { useAccount, useWriteContract } from "wagmi"
+import { appConfig } from "../utils/config"
+import { abi } from "../abi/Manufacturer.json"
 
 type FormDataType = {
   vin?: string | undefined
@@ -9,15 +11,23 @@ type FormDataType = {
   fuel_filter?: boolean | undefined
   cabin_filter?: boolean | undefined
   date?: string | undefined
-  mileage?: string | undefined
+  mileage?: number | undefined
 }
 
+type FormDataError = {
+  vin?: string | undefined
+  date?: string | undefined
+  mileage?: string | undefined
+}
 export default function ServiceTab() {
   const [formData, setFormData] = useState<FormDataType>({})
-  const [formError, setFormError] = useState({})
+  const [formError, setFormError] = useState<FormDataError>({})
 
+  //hooks
   const account = useAccount()
+  const { writeContract, error, isPending, isSuccess, status, isError } = useWriteContract()
 
+  //functions
   const handleSubmit = (e: any) => {
     e.preventDefault()
     if (account?.isDisconnected)
@@ -30,6 +40,30 @@ export default function ServiceTab() {
         draggable: true,
         progress: undefined,
       })
+    if (!formData?.vin) return setFormError((prev) => ({ ...prev, vin: "Vin is required" }))
+    if (formData?.vin.length !== 17) return setFormError((prev) => ({ ...prev, vin: "Vin must be 17 characters long" }))
+      if (!formData?.date)
+        return setFormError((prev) => ({ ...prev, date: "Date is required" }))
+    if (formData?.mileage && formData?.mileage < 0)
+      return setFormError((prev) => ({ ...prev, mileage: "Actual mileage can not be lower than 0" }))
+
+    // Send data in contract call
+    writeContract({
+      abi,
+      address: `0x${appConfig.serviceContractAddress}`,
+      functionName: "writeServiceData",
+      args: [
+        formData?.vin,
+        [formData?.air_filter && formData?.air_filter, 
+          formData?.oil_filter && formData?.oil_filter,
+          formData?.fuel_filter && formData?.fuel_filter,
+          formData?.cabin_filter && formData?.cabin_filter,
+          formData?.air_filter && formData?.air_filter,
+        ],
+        // new Date(formData?.production_date).getTime(),
+        formData?.mileage || 0,
+      ],
+    })
     setFormError({})
     setFormData({})
   }
@@ -45,6 +79,8 @@ export default function ServiceTab() {
     setFormError({ ...formError, [e.target.name]: e.target.checked })
   }
 
+  // Effects
+
   return (
     <form
       onSubmit={(e) => handleSubmit(e)}
@@ -53,6 +89,7 @@ export default function ServiceTab() {
       <h1 className="font-medium text-lg mb-6">Add car's service info</h1>
       <div>
         <label className="block mb-2 text-sm font-medium text-gray-900">Enter VIN</label>
+        {formError?.vin && <p className="text-red-600 text-base">{formError?.vin}</p>}
         <input
           onChange={(e) => handleChange(e)}
           name={"vin"}
@@ -108,6 +145,7 @@ export default function ServiceTab() {
       </div>
       <div>
         <label className="block mb-2 text-sm font-medium text-gray-900">Enter date</label>
+        {formError?.date && <p className="text-red-600 text-base">{formError?.date}</p>}
         <input
           onChange={(e) => handleChange(e)}
           name={"date"}
@@ -119,6 +157,7 @@ export default function ServiceTab() {
       </div>
       <div>
         <label className="block mb-2 text-sm font-medium text-gray-900">Enter current mileage</label>
+        {formError?.mileage && <p className="text-red-600 text-base">{formError?.mileage}</p>}
         <input
           onChange={(e) => handleChange(e)}
           name={"mileage"}
@@ -128,7 +167,6 @@ export default function ServiceTab() {
           className="block max-w-[500px] w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs focus:ring-blue-500 focus:border-blue-500"
         />
       </div>
-
       <button
         type={"submit"}
         className="w-full max-w-[500px] py-2.5 px-2 bg-blue-700 rounded-lg text-white active:opacity-70"

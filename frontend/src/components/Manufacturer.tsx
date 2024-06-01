@@ -50,7 +50,7 @@ export default function ManufacturerTab() {
     if (!formData?.owner) return setFormError((prev) => ({ ...prev, owner: "Owner is required" }))
     if (!isAddress(formData?.owner))
       return setFormError((prev) => ({ ...prev, owner: "Owner address is not correct format" }))
-    console.log(new Date(formData?.production_date).getTime(), "time")
+    // Send date in contract call
     writeContract({
       abi,
       address: `0x${appConfig.manufacturerContractAddress}`,
@@ -99,7 +99,7 @@ export default function ManufacturerTab() {
           progress: undefined,
         })
       if (isError)
-        return toast.error(`Something went wrong`, {
+        return toast.error(`Something went wrong ${error.message}`, {
           position: "top-center",
           autoClose: 5000,
           hideProgressBar: false,
@@ -108,10 +108,10 @@ export default function ManufacturerTab() {
           draggable: true,
           progress: undefined,
         })
+        console.error(error);
     }
     check()
   }, [isError, error, isSuccess])
-
   return (
     <form
       onSubmit={(e) => handleSubmit(e)}
