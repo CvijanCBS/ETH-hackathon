@@ -54,6 +54,7 @@ contract Manufacturer is Ownable {
         
         address newWallet = createWallet(msg.sender);
         vehicles[vin] = Vehicle(productionDate, initialMileage, owner, newWallet);
+        DataVerifier(verifierContract).createHash(vin, owner);
 
         emit VehicleProduced(vin, productionDate, initialMileage, newWallet);
     }
@@ -74,10 +75,10 @@ contract Manufacturer is Ownable {
     /**
      * @notice Verifies data using the verifier contract.
      * @param vin The Vehicle Identification Number (VIN) of the vehicle.
-     * @param data The data to be verified.
+     * @param owner The owner to be verified.
      */
-    function verifyData(string memory vin, string memory data) public {
-        bool isValid = DataVerifier(verifierContract).verifyData(data);
+    function verifyData(string memory vin, address owner) public {
+        bool isValid = DataVerifier(verifierContract).verifyData(vin, owner);
         emit DataVerified(vin, isValid);
     }
 
@@ -98,7 +99,9 @@ contract Manufacturer is Ownable {
             revert NotApprovedToChangeOwnership();
         }
 
+        DataVerifier(verifierContract).changeHash(vin, vehicles[vin].owner);
         vehicles[vin].owner = newOwner;
+        DataVerifier(verifierContract).createHash(vin, newOwner);
 
         emit NewOwner(newOwner);
     }
@@ -164,14 +167,27 @@ contract Wallet is Ownable {
 }
 
 contract DataVerifier {
+    error DataNotVerified();
+
     address public verifier;
+    mapping (bytes32 => bool) public hashes;
 
     constructor(address _verifier) {
         verifier = _verifier;
     }
 
-    function verifyData(string memory data) public view returns (bool) {
-        // Implementation for data verification
+    function createHash(string memory vin, address owner) public {
+        hashes[keccak256(abi.encodePacked(vin, owner))] = true;
+    }
+
+    function changeHash(string memory vin, address owner) public {
+        hashes[keccak256(abi.encodePacked(vin, owner))] = false;
+    }
+
+    function verifyData(string memory vin, address owner) public view returns (bool) {
+        if(!hashes[keccak256(abi.encodePacked(vin, owner))]) {
+            revert DataNotVerified();
+        }
         return true;
     }
 }

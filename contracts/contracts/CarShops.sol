@@ -87,12 +87,12 @@ contract CarShops {
     function writeServiceData(string memory vin, Services[] memory services, uint256 mileage) public ValidVIN(vin) {
         vehicleServices.push(VehicleService(vin, block.timestamp, msg.sender, services, mileage));
 
-        // manufacturer.verifyData(vin, data);
+        manufacturer.verifyData(vin, manufacturer.getVehicleData(vin).owner);
 
         emit AddServiceData(vin);
     }
 
-    function getVehicleServiceData() public returns(VehicleService[] memory){
+    function getVehicleServiceData() public view returns(VehicleService[] memory){
         return vehicleServices;
     }
 }
