@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { useReadContract } from "wagmi"
+import { useAccount, useReadContract } from "wagmi"
 import { abi as manufacturerAbi } from "../abi/Manufacturer.json"
 import { abi as serviceAbi } from "../abi/CarShops.json"
 import { appConfig } from "../utils/config"
@@ -9,6 +9,10 @@ export default function Home() {
   const [vin, setVin] = useState("")
   const [vinError, setVinError] = useState("")
   const [inspectingCarInfo, setInspectingCarInfo] = useState(false)
+
+
+//hooks
+const account = useAccount()
 
   const vehicleData = useReadContract({
     abi: manufacturerAbi,
@@ -26,6 +30,10 @@ export default function Home() {
   console.log(serviceData, `0x${appConfig.serviceContractAddress}`)
   async function handleSubmit(e: any) {
     e.preventDefault()
+    if (account?.isDisconnected) {
+      setVinError("Connect your account first")
+      return
+    }
     if (!vin) {
       setVinError("VIN is required")
       return
@@ -76,10 +84,12 @@ export default function Home() {
       ) : (
         <form onSubmit={(e) => handleSubmit(e)} className="w-[500px] bg-white py-5 px-4 rounded-lg shadow-md">
           <h1 className="text-gray-900 font-bold text-xl mb-9">Search by VIN</h1>
+  
           <h2 className="text-gray-500 font-medium text-base mb-6">
             {" "}
             Search any vehicle history by providing it's VIN number
           </h2>
+          {vinError && <p className="text-red-600 text-base">{vinError } </p>}
           <label className="mb-2 text-sm font-medium text-gray-900 sr-only ">Search</label>
           <div className="relative">
             <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
