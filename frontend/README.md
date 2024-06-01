@@ -1,6 +1,16 @@
-# VHistory 
+# VHistory frontend
 
-Introducing VHistory, a revolutionary blockchain-based solution that brings transparency and trust to the used car market. Our innovative approach leverages the power of blockchain technology to create a tamper-proof, verifiable record of a car's mileage, service history, accident data, etc.
+## Requirements to run:
+
+In order to run this project you would need to populate .end file with the following data: 
+
+```
+VITE_ENV=DEVELOPMENT 
+
+VITE_MANUFACTURER_CONTRACT_ADDRESS=contract address without 0x 
+VITE_SERVICE_CONTRACT_ADDRESS=contract address without 0x
+VITE_CAR_OWNER_CONTRACT_ADDRESS=contract address without 0x
+```
 
 ## Run locally:
 
