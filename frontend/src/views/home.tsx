@@ -60,11 +60,14 @@ export default function Home() {
     }
   }
 
-  const date = () => {
+  const date = (bigDate: any) => {
     // @ts-ignore
-    const dat = new Date(Number(vehicleData?.data?.productionDate) * 1000)
-    return dat.toDateString()
+    let dat: any = new Date(Number(bigDate) * 1000)
+    dat = dat.toDateString()
+    return dat
   }
+
+  
 
   return (
     <div className="w-full min-h-full flex items-center justify-center">
@@ -76,9 +79,40 @@ export default function Home() {
             <img src="/carInspect.jpeg" className="w-full max-w-[500px] aspect-auto rounded-lg" alt="car" />
             <div className="w-full max-w-[500px] flex flex-row justify-between items-center">
               <p className="text-base font-medium text-gray-900">Production date:</p>{" "}
-              <p className="text-base text-gray-500">{date()}</p>{" "}
+              {/* @ts-ignore */}
+              <p className="text-base text-gray-500">{date(vehicleData?.data?.productionDate)}</p>{" "}
+            </div>
+            <div className="w-full max-w-[500px] flex flex-row justify-between items-center">
+              <p className="text-base font-medium text-gray-900">Initial mileage:</p>{" "}
+                {/* @ts-ignore */}
+              <p className="text-base text-gray-500">{Number(vehicleData?.data?.initialMileage)}</p>{" "}
+            </div>
+            <div className="w-full max-w-[500px] flex flex-row justify-between items-center">
+              <p className="text-base font-medium text-gray-900">Previous mileage:</p>{" "}
+                {/* @ts-ignore */}
+              <p className="text-base text-gray-500">{Number(vehicleData?.data?.initialMileage)}</p>{" "}
+            </div>
+            <div className="w-full max-w-[500px] flex flex-row justify-between items-center">
+              <p className="text-base font-medium text-gray-900">Current mileage:</p>{" "}
+                {/* @ts-ignore */}
+              <p className="text-base text-gray-500">{Number(vehicleData?.data?.initialMileage)}</p>{" "}
             </div>
           </div>
+            {/* @ts-ignore */}
+          {serviceData?.data?.length > 0 && 
+          <div className="flex flex-col gap-5 mt-9">
+          <h1 className="text-gray-900 font-bold text-2xl mb-3">Car's services info</h1>
+          <div className="w-full max-w-[500px] flex flex-row justify-between items-center">
+            <p className="text-base font-medium text-gray-900">Date:</p>{" "}
+              {/* @ts-ignore */}
+            <p className="text-base text-gray-500">{date(serviceData?.data[1])}</p>{" "}
+          </div>
+          <div className="w-full max-w-[500px] flex flex-row justify-between items-center">
+            <p className="text-base font-medium text-gray-900">Car's mileage:</p>{" "}
+              {/* @ts-ignore */}
+            <p className="text-base text-gray-500">{Number(serviceData?.data[3])}</p>{" "}
+          </div>
+        </div>}
         </div>
       ) : (
         <form onSubmit={(e) => handleSubmit(e)} className="w-[500px] bg-white py-5 px-4 rounded-lg shadow-md">
