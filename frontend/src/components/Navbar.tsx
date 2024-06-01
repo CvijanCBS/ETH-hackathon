@@ -11,11 +11,11 @@ export default function Navbar() {
   return (
     <nav className="flex flex-row px-4 w-full h-fit min-h-16 justify-between items-center">
       {isOpen && <ConnectWalletModal setIsOpen={setIsOpen} />}
-      <div className="flex flex-row gap-9 text-base items-center font-medium text-gray-900">
+      <div className="flex flex-row gap-1  md:gap-9 text-base items-center font-medium text-gray-900">
         <Link to="/">
-          <img src="/logo.png" className="w-[130px] h-[30px]" />
+          <img src="/logo.png" className="md:w-[130px] md:h-[30px] w-[90px] h-[20px] " />
         </Link>
-        <Link to="/dashboard">Dashboard</Link>
+        {account?.isConnected && <Link to="/dashboard">Dashboard</Link>}
       </div>
       {account.isConnected ? (
         <button

@@ -108,7 +108,7 @@ export default function ManufacturerTab() {
           draggable: true,
           progress: undefined,
         })
-        console.error(error);
+      console.error(error)
     }
     check()
   }, [isError, error, isSuccess])

@@ -2,11 +2,12 @@ import { useEffect, useState } from "react"
 import { toast } from "react-toastify"
 import { useAccount, useWriteContract } from "wagmi"
 import { appConfig } from "../utils/config"
-import { abi } from "../abi/Manufacturer.json"
+import { abi } from "../abi/CarShops.json"
 import { Spinner } from "../utils/icons"
 
 type FormDataType = {
   vin?: string | undefined
+  oil_change?: boolean | undefined
   oil_filter?: boolean | undefined
   air_filter?: boolean | undefined
   fuel_filter?: boolean | undefined
@@ -43,27 +44,25 @@ export default function ServiceAdd() {
       })
     if (!formData?.vin) return setFormError((prev) => ({ ...prev, vin: "Vin is required" }))
     if (formData?.vin.length !== 17) return setFormError((prev) => ({ ...prev, vin: "Vin must be 17 characters long" }))
-      if (!formData?.date)
-        return setFormError((prev) => ({ ...prev, date: "Date is required" }))
+    //   if (!formData?.date)
+    //     return setFormError((prev) => ({ ...prev, date: "Date is required" }))
     if (formData?.mileage && formData?.mileage < 0)
       return setFormError((prev) => ({ ...prev, mileage: "Actual mileage can not be lower than 0" }))
+
+    const servicesDone: Number[] = []
+    if (formData?.oil_change) servicesDone.push(1)
+    if (formData?.air_filter) servicesDone.push(3)
+    if (formData?.oil_filter) servicesDone.push(2)
+    if (formData?.oil_filter) servicesDone.push(0)
+    if (formData?.fuel_filter) servicesDone.push(4)
+    if (formData?.cabin_filter) servicesDone.push(5)
 
     // Send data in contract call
     writeContract({
       abi,
       address: `0x${appConfig.serviceContractAddress}`,
       functionName: "writeServiceData",
-      args: [
-        formData?.vin,
-        [formData?.air_filter && 'AIR_FILTER', 
-          formData?.oil_filter && 'OIL_FILTER',
-          formData?.fuel_filter && 'FUEL_FILTER',
-          formData?.cabin_filter && 'CABIN_FILTER',
-          formData?.air_filter && 'AIR_FILTER',
-        ],
-        // new Date(formData?.production_date).getTime(),
-        formData?.mileage || 0,
-      ],
+      args: [formData?.vin, servicesDone, formData?.mileage || 0],
     })
     setFormError({})
     setFormData({})
@@ -71,17 +70,16 @@ export default function ServiceAdd() {
 
   const handleChange = (e: any) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
-    setFormError({ ...formError, [e.target.name]: e.target.value })
+    setFormError({})
   }
 
   const handleCheckBoxChange = (e: any) => {
-    console.log(e)
     setFormData({ ...formData, [e.target.name]: e.target.checked })
-    setFormError({ ...formError, [e.target.name]: e.target.checked })
+    setFormError({})
   }
 
   // Effects
- useEffect(() => {
+  useEffect(() => {
     async function check() {
       if (isSuccess)
         return toast.success(`Successful`, {
@@ -94,7 +92,7 @@ export default function ServiceAdd() {
           progress: undefined,
         })
       if (isError)
-        return toast.error(`Something went wrong ${error.message}`, {
+        return toast.error(`Something went wrong`, {
           position: "top-center",
           autoClose: 5000,
           hideProgressBar: false,
@@ -103,10 +101,11 @@ export default function ServiceAdd() {
           draggable: true,
           progress: undefined,
         })
-        console.error(error);
+      console.error(error)
     }
     check()
   }, [isError, error, isSuccess])
+
   return (
     <form
       onSubmit={(e) => handleSubmit(e)}
@@ -128,6 +127,16 @@ export default function ServiceAdd() {
       <div>
         <h2 className="mb-2 mt-3">Select what is done:</h2>
 
+        <div className="flex items-center me-4">
+          <input
+            checked={formData?.oil_change || false}
+            type="checkbox"
+            name="oil_change"
+            onChange={(e) => handleCheckBoxChange(e)}
+            className="w-4 h-4 text-red-600 bg-gray-100 border-gray-300 rounded focus:ring-red-500"
+          />
+          <label className="ms-2 text-sm font-medium text-gray-900 ">Oil change</label>
+        </div>
         <div className="flex items-center me-4">
           <input
             checked={formData?.oil_filter || false}
@@ -169,7 +178,7 @@ export default function ServiceAdd() {
           <label className="ms-2 text-sm font-medium text-gray-900 ">Cabin Filter</label>
         </div>
       </div>
-      <div>
+      {/* <div>
         <label className="block mb-2 text-sm font-medium text-gray-900">Enter date</label>
         {formError?.date && <p className="text-red-600 text-base">{formError?.date}</p>}
         <input
@@ -180,7 +189,7 @@ export default function ServiceAdd() {
           id="small-input"
           className="block max-w-[500px] w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs focus:ring-blue-500 focus:border-blue-500"
         />
-      </div>
+      </div> */}
       <div>
         <label className="block mb-2 text-sm font-medium text-gray-900">Enter current mileage</label>
         {formError?.mileage && <p className="text-red-600 text-base">{formError?.mileage}</p>}
@@ -194,10 +203,13 @@ export default function ServiceAdd() {
         />
       </div>
       <button
+        disabled={!formData?.vin || isPending}
         type={"submit"}
-        className="w-full max-w-[500px] py-2.5 px-2 bg-blue-700 rounded-lg text-white active:opacity-70"
+        className={` flex items-center justify-center w-full max-w-[500px] py-2.5 px-2 bg-blue-700 rounded-lg text-white active:opacity-70 ${
+          !formData?.vin || isPending ? "bg-gray-300" : ""
+        }`}
       >
-        {isPending ? <Spinner className={"w-6 h-6"} /> : `Add service`}
+        {isPending ? <Spinner className={"w-6 h-6 fill-blue-600 animate-spin"} /> : `Add service`}
       </button>
     </form>
   )
