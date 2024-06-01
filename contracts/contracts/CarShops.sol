@@ -92,4 +92,7 @@ contract CarShops {
         emit AddServiceData(vin);
     }
 
+    function getVehicleServiceData() public returns(VehicleService[] memory){
+        return vehicleServices;
+    }
 }

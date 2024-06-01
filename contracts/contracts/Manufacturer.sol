@@ -64,7 +64,7 @@ contract Manufacturer is Ownable {
      * @return The address of the newly created wallet.
      */
     function createWallet(address _owner) internal returns (address) {
-        address newWallet = address(new Wallet(_owner));
+        address newWallet = address(new Wallet(_owner, address(this)));
 
         emit NewWalletCreated(newWallet, _owner);
 
@@ -135,8 +135,32 @@ contract Manufacturer is Ownable {
 }
 
 contract Wallet is Ownable {
- 
-    constructor(address wallet) Ownable(wallet) {}
+    error InvalidWallet();
+    error InvalidMileage();
+
+    event CarMileageChanged(string indexed vin, uint256 newMileage);
+
+    Manufacturer public manufacturer;
+
+
+    constructor(address wallet, address _manufacturer) Ownable(wallet) {
+        manufacturer = Manufacturer(_manufacturer);
+    }
+
+    function changeCarMileage(string memory vin, uint256 newMileage) public onlyOwner {
+        Manufacturer.Vehicle memory temp = manufacturer.getVehicleData(vin);
+        if(temp.wallet != msg.sender) {
+            revert InvalidWallet();
+        }
+
+        if(temp.initialMileage >= newMileage) {
+            revert InvalidMileage();
+        }
+
+        manufacturer.changeCarInfo(vin, temp.productionDate, newMileage);
+
+        emit CarMileageChanged(vin, newMileage);
+    }
 }
 
 contract DataVerifier {
