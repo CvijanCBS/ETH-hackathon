@@ -1,12 +1,32 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 import ConnectWalletModal from "./modals/ConnectWallet"
 import { useAccount, useDisconnect } from "wagmi"
+import { toast } from "react-toastify"
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState<boolean>(false)
   const account = useAccount()
   const { disconnect } = useDisconnect()
+
+  // effect
+  useEffect(() => {
+    async function checkChainId() {
+      if (account?.isDisconnected) return
+      if (account?.chainId !== 59141) {
+        toast.error("Please switch your network in wallet to Linea Sepolia", {
+          position: "top-center",
+          autoClose: 50000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        })
+      }
+    }
+    checkChainId()
+  }, [account?.chainId])
 
   return (
     <nav className="flex flex-row px-4 w-full h-fit min-h-16 justify-between items-center">

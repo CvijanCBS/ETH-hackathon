@@ -187,8 +187,8 @@ export default function Home() {
               <button
                 type="button"
                 onClick={() => checkOwner()}
-                className={` w-full max-w-[500px] py-2.5 px-2 bg-blue-700 rounded-lg text-white active:opacity-70 ${
-                  isPending || (!ownerAddress && "bg-gray-200")
+                className={`flex items-center justify-center w-full max-w-[500px] py-2.5 px-2 bg-blue-700 rounded-lg text-white active:opacity-70 ${
+                  isPending || !ownerAddress ? "bg-gray-200" : ""
                 }`}
               >
                 {isPending ? <Spinner className={"w-6 h-6"} /> : `Check`}
