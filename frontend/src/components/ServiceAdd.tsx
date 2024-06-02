@@ -92,7 +92,7 @@ export default function ServiceAdd() {
           progress: undefined,
         })
       if (isError)
-        return toast.error(`Something went wrong`, {
+        return toast.error(`Something went wrong ${error}`, {
           position: "top-center",
           autoClose: 5000,
           hideProgressBar: false,
